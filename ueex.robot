@@ -12,9 +12,7 @@ ${locator.minimalStep.amount}                                   id=tePosition_mi
 ${locator.value.amount}                                         id=tePosition_value_amount
 ${locator.value.valueAddedTaxIncluded}                          id=cbPosition_value_valueAddedTaxIncluded
 ${locator.value.currency}                                       id=tslPosition_value_currency
-
 ${locator.auctionPeriod.startDate}                              id=tdtpPosition_auctionPeriod_startDate_Date
-
 ${locator.enquiryPeriod.startDate}                              id=tdtpPosition_enquiryPeriod_startDate_Date
 ${locator.enquiryPeriod.endDate}                                id=tdtpPosition_enquiryPeriod_endDate_Date
 ${locator.tenderPeriod.startDate}                               id=tdtpPosition_tenderPeriod_startDate_Date
@@ -26,9 +24,7 @@ ${locator.dgfDecisionID}                                        id=tePosition_dg
 ${locator.dgfDecisionDate}                                      id=tdtpPosition_dgfDecisionDate
 ${locator.eligibilityCriteria}                                  id=tPosition_eligibilityCriteria
 ${locator.tenderAttempts}                                       id=tPosition_tenderAttempts
-
 ${locator.procurementMethodType}                                id=tPosition_procurementMethodType
-
 ${locator.items[0].quantity}                                    id=tew_item_0_quantity
 ${locator.items[0].description}                                 id=tew_item_0_description
 ${locator.items[0].unit.code}                                   id=tw_item_0_unit_code
@@ -45,7 +41,6 @@ ${locator.items[0].classification.description}                  id=tw_item_0_cla
 ${locator.items[0].additionalClassifications[0].scheme}         id=tw_item_0_additionalClassifications_description
 ${locator.items[0].additionalClassifications[0].id}             id=tew_item_0_additionalClassifications_id
 ${locator.items[0].additionalClassifications[0].description}    id=tw_item_0_additionalClassifications_description
-
 ${locator.items[1].description}                                 id=tew_item_1_description
 ${locator.items[1].classification.id}                           id=tew_item_1_classification_id
 ${locator.items[1].classification.description}                  id=tw_item_1_classification_description
@@ -53,7 +48,6 @@ ${locator.items[1].classification.scheme}                       id=tw_item_1_cla
 ${locator.items[1].unit.code}                                   id=tw_item_1_unit_code
 ${locator.items[1].unit.name}                                   id=tslw_item_1_unit_code
 ${locator.items[1].quantity}                                    id=tew_item_1_quantity
-
 ${locator.items[2].description}                                 id=tew_item_2_description
 ${locator.items[2].classification.id}                           id=tew_item_2_classification_id
 ${locator.items[2].classification.description}                  id=tw_item_2_classification_description
@@ -61,17 +55,13 @@ ${locator.items[2].classification.scheme}                       id=tw_item_2_cla
 ${locator.items[2].unit.code}                                   id=tw_item_2_unit_code
 ${locator.items[2].unit.name}                                   id=tslw_item_2_unit_code
 ${locator.items[2].quantity}                                    id=tew_item_2_quantity
-
 ${locator.questions[0].title}                                   css=.qa_title
 ${locator.questions[0].description}                             css=.qa_description
 ${locator.questions[0].date}                                    css=.qa_question_date
 ${locator.questions[0].answer}                                  css=.qa_answer
-
 ${locator.cancellations[0].status}                              css=.cancel_status
 ${locator.cancellations[0].reason}                              css=.cancel_reason
 ${locator.contracts.status}                                     css=.contract_status
-
-
 
 *** Keywords ***
 Підготувати клієнт для користувача
@@ -111,71 +101,54 @@ Login
   [Documentation]
   ...      ${ARGUMENTS[0]} ==  username
   ...      ${ARGUMENTS[1]} ==  tender_data
-
-  Set Global Variable      ${TENDER_INIT_DATA_LIST}         ${ARGUMENTS[1]}
-
+  Set Global Variable      ${TENDER_INIT_DATA_LIST}    ${ARGUMENTS[1]}
   ${title}=                Get From Dictionary         ${ARGUMENTS[1].data}             title
   ${dgf}=                  Get From Dictionary         ${ARGUMENTS[1].data}             dgfID
   ${dgfDecisionDate}=      convert_ISO_DMY             ${ARGUMENTS[1].data.dgfDecisionDate}
   ${dgfDecisionID}=        Get From Dictionary         ${ARGUMENTS[1].data}             dgfDecisionID
   ${tenderAttempts}=       get_tenderAttempts          ${ARGUMENTS[1].data}
-
   ${description}=          Get From Dictionary         ${ARGUMENTS[1].data}             description
-  ${procuringEntity_name}=  Get From Dictionary        ${ARGUMENTS[1].data.procuringEntity}  name
+  ${procuringEntity_name}=     Get From Dictionary     ${ARGUMENTS[1].data.procuringEntity}  name
   ${items}=                Get From Dictionary         ${ARGUMENTS[1].data}             items
   ${budget}=               get_budget                  ${ARGUMENTS[1]}
   ${step_rate}=            get_step_rate               ${ARGUMENTS[1]}
-
-  ${currency}=                 Get From Dictionary         ${ARGUMENTS[1].data.value}       currency
-  ${valueAddedTaxIncluded}=    Get From Dictionary         ${ARGUMENTS[1].data.value}       valueAddedTaxIncluded
-
-  ${start_day_auction}=        get_tender_dates          ${ARGUMENTS[1]}            StartDate
-  ${start_time_auction}=       get_tender_dates          ${ARGUMENTS[1]}            StartTime
-
+  ${currency}=                 Get From Dictionary     ${ARGUMENTS[1].data.value}       currency
+  ${valueAddedTaxIncluded}=    Get From Dictionary     ${ARGUMENTS[1].data.value}       valueAddedTaxIncluded
+  ${start_day_auction}=        get_tender_dates        ${ARGUMENTS[1]}                  StartDate
+  ${start_time_auction}=       get_tender_dates        ${ARGUMENTS[1]}                  StartTime
   ${item0}=                Get From List               ${items}                         0
   ${descr_lot}=            Get From Dictionary         ${item0}                         description
   ${unit}=                 Get From Dictionary         ${items[0].unit}                 code
   ${cav_id}=               Get From Dictionary         ${items[0].classification}       id
   ${quantity}=             get_quantity                ${items[0]}
-
-
-
   Switch Browser    ${ARGUMENTS[0]}
   Wait Until Page Contains Element     id=btAddTender    20
   Click Element                        id=btAddTender
   Wait Until Page Contains Element     id=ePosition_title       20
-  Select From List By Value            id=slPosition_procurementMethodType      ${ARGUMENTS[1].data.procurementMethodType}
-  Input text				 id=ew_Org_0_PE_name               ${procuringEntity_name}
+  Select From List By Value            id=slPosition_procurementMethodType             ${ARGUMENTS[1].data.procurementMethodType}
+  Input text			       id=ew_Org_0_PE_name                         ${procuringEntity_name}
   Input text                           id=ePosition_title                ${title}
   Input text                           id=ePosition_description          ${description}
   Input text                           id=ePosition_dgfID                ${dgf}
   Input text                           id=ePosition_dgfDecisionID        ${dgfDecisionID}
   Input text                           id=dtpPosition_dgfDecisionDate    ${dgfDecisionDate}
   Select From List By Value            id=slPosition_tenderAttempts      ${tenderAttempts}
-
   Input text             id=ePosition_value_amount                       ${budget}
   Click Element          id=lcbPosition_value_valueAddedTaxIncluded
-
   Input text             id=dtpPosition_auctionPeriod_startDate_Date          ${start_day_auction}
   Input text             id=ePosition_auctionPeriod_startDate_Time          ${start_time_auction}
-
   input text             id=ePosition_minimalStep_amount                         ${step_rate}
-
   Click Element          id=lcb_is_quick
-
   ${items}=              Get From Dictionary            ${ARGUMENTS[1].data}   items
   ${Items_length}=       Get Length                     ${items}
   :FOR   ${index}   IN RANGE   ${Items_length}
   \	    Click Element          id=btn_items_add
   \       Додати предмет    ${items[${index}]}          ${index}
-
-
   Click Element      id=btnSend
   Sleep   3
   Wait Until Element Contains  id=ValidateTips      Збереження виконано         10
   Click Element      id=btnPublic
   Wait Until Page Contains      Публікацію виконано         10
-
   ${tender_id}=     Get Text        id=tPosition_tenderID
   ${TENDER}=        Get Text        id=tPosition_tenderID
   log to console      ${TENDER}
@@ -184,20 +157,17 @@ Login
 Додати предмет
   [Arguments]   ${item}   ${index}
   Wait Until Page Contains Element   id=ew_item_${index}_description
-  Input text        id=ew_item_${index}_description                ${item.description}
-  Input text        id=ew_item_${index}_quantity                   ${item.quantity}
-  Select From List By Value        id=slw_item_${index}_unit_code  ${item.unit.code}
-  Input text        id=ew_item_${index}_classification_id          ${item.classification.id}
+  Input text        id=ew_item_${index}_description                       ${item.description}
+  Input text        id=ew_item_${index}_quantity                          ${item.quantity}
+  Select From List By Value        id=slw_item_${index}_unit_code         ${item.unit.code}
+  Input text        id=ew_item_${index}_classification_id                 ${item.classification.id}
   Wait Until Page Contains Element     xpath=(//ul[contains(@class, 'ui-autocomplete') and not(contains(@style,'display: none'))]//li//a)
   Click Element     xpath=(//ul[contains(@class, 'ui-autocomplete') and not(contains(@style,'display: none'))]//li//a)
-
   Input text        id=ew_item_${index}_deliveryAddress_countryName       ${item.deliveryAddress.countryName}
   Input text        id=ew_item_${index}_deliveryAddress_postalCode        ${item.deliveryAddress.postalCode}
   Input text        id=ew_item_${index}_deliveryAddress_region            ${item.deliveryAddress.region}
   Input text        id=ew_item_${index}_deliveryAddress_locality          ${item.deliveryAddress.locality}
   Input text        id=ew_item_${index}_deliveryAddress_streetAddress     ${item.deliveryAddress.streetAddress}
-
-
 
 Завантажити документ
   [Arguments]  @{ARGUMENTS}
