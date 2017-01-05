@@ -80,3 +80,6 @@ def is_eligible(tender_data):
 
 def download_file(url, file_name, output_dir):
     urllib.urlretrieve(url, ('{}/{}'.format(output_dir, file_name)))
+
+def inc(value):
+    return int(value) + 1
