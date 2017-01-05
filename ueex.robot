@@ -125,7 +125,7 @@ Login
   Wait Until Page Contains Element     id=btAddTender    20
   Click Element                        id=btAddTender
   Wait Until Page Contains Element     id=ePosition_title       20
-  Select From List By Value            id=slPosition_procurementMethodType             ${ARGUMENTS[1].data.procurementMethodType}
+  Select From List By Value            id=slPosition_procurementMethodType         ${ARGUMENTS[1].data.procurementMethodType}
   Input text			       id=ew_Org_0_PE_name                         ${procuringEntity_name}
   Input text                           id=ePosition_title                ${title}
   Input text                           id=ePosition_description          ${description}
@@ -176,7 +176,7 @@ Login
   ...      ${ARGUMENTS[1]} ==  ${filepath}
   ...      ${ARGUMENTS[2]} ==  ${TENDER}
   ueex.Пошук тендера по ідентифікатору   ${ARGUMENTS[0]}   ${ARGUMENTS[2]}
-  Wait Until Page Contains Element  id=btn_documents_add
+  Wait Until Page Contains Element       xpath=(//*[@id='btn_documents_add' and not(contains(@style,'display: none'))])
   Click Element     id=btn_documents_add
   Choose File       xpath=(//*[@id='upload_form']/input[2])   ${ARGUMENTS[1]}
   Sleep   2
@@ -255,13 +255,15 @@ Login
 
 Отримати інформацію про cancellations[0].status
   Перейти до сторінки відмін
-  Wait Until Page Contains Element    xpath=(//span[contains(@class, 'cancel_status')])
-  ${return_value}=  Get text          xpath=(//span[contains(@class, 'cancel_status')])
+  Wait Until Page Contains Element    xpath=(//span[contains(@class, 'rec_cancel_status')])
+  ${return_value}=   Get text         xpath=(//span[contains(@class, 'rec_cancel_status')])
+  [return]           ${return_value}
 
 Отримати інформацію про cancellations[0].reason
   Перейти до сторінки відмін
-  Wait Until Page Contains Element    xpath=(//span[contains(@class, 'cancel_reason')])
-  ${return_value}=  Get text          xpath=(//span[contains(@class, 'qa_title')])
+  Wait Until Page Contains Element    xpath=(//span[contains(@class, 'rec_cancel_reason')])
+  ${return_value}=   Get text         xpath=(//span[contains(@class, 'rec_cancel_reason')])
+  [return]           ${return_value}
 
 Оновити сторінку з тендером
   [Arguments]    @{ARGUMENTS}
@@ -475,19 +477,19 @@ Login
   [return]           ${return_value}
 
 Отримати інформацію про questions[${index}].title
-  ${index}=          Evaluate         ${index} + 1
+  ${index}=          inc              ${index}
   Wait Until Page Contains Element    xpath=(//span[contains(@class, 'qa_title')])[${index}]
   ${return_value}=   Get text         xpath=(//span[contains(@class, 'qa_title')])[${index}]
   [return]           ${return_value}
 
 Отримати інформацію про questions[${index}].description
-  ${index}=          Evaluate         ${index} + 1
+  ${index}=          inc              ${index}
   Wait Until Page Contains Element    xpath=(//span[contains(@class, 'qa_description')])[${index}]
   ${return_value}=   Get text         xpath=(//span[contains(@class, 'qa_description')])[${index}]
   [return]           ${return_value}
 
 Отримати інформацію про questions[${index}].answer
-  ${index}=          Evaluate         ${index} + 1
+  ${index}=          inc              ${index}
   Wait Until Page Contains Element    xpath=(//span[contains(@class, 'qa_answer')])[${index}]
   ${return_value}=   Get text         xpath=(//span[contains(@class, 'qa_answer')])[${index}]
   [return]           ${return_value}
@@ -506,7 +508,7 @@ Login
   ...      ${ARGUMENTS[3]} = answer_data
   ${answer}=     Get From Dictionary  ${ARGUMENTS[3].data}  answer
   Перейти до сторінки запитань
-  Wait Until Page Contains Element      css=.bt_addAnswer
+  Wait Until Page Contains Element      xpath=(//*[contains(@class, 'bt_addAnswer') and not(contains(@style,'display: none'))])
   Click Element                         css=.bt_addAnswer:first-child
   Input Text                            id=e_answer        ${answer}
   Click Element                         id=SendAnswer
@@ -521,17 +523,17 @@ Login
   ${amount}=    get_str          ${ARGUMENTS[2].data.value.amount}
   ${is_qualified}=   is_qualified         ${ARGUMENTS[2]}
   ${is_eligible}=    is_eligible          ${ARGUMENTS[2]}
-  ueex.Пошук тендера по ідентифікатору  ${ARGUMENTS[0]}  ${ARGUMENTS[1]}
-  Wait Until Page Contains Element          id=btnBid    5
+  ueex.Пошук тендера по ідентифікатору    ${ARGUMENTS[0]}  ${ARGUMENTS[1]}
+  Wait Until Page Contains Element          xpath=(//*[@id='btnBid' and not(contains(@style,'display: none'))]) 
   Click Element       id=btnBid
   Sleep   3
-  Wait Until Page Contains Element          id=eBid_price    5
+  Wait Until Page Contains Element          xpath=(//*[@id='eBid_price' and not(contains(@style,'display: none'))]) 
   Input Text          id=eBid_price         ${amount}
   Run Keyword If    ${is_qualified}   Click Element   id=lcbBid_selfQualified
   Run Keyword If    ${is_eligible}    Click Element   id=lcbBid_selfEligible
   Click Element       id=btn_save
   sleep   3
-  Wait Until Page Contains Element          id=btn_public
+  Wait Until Page Contains Element          xpath=(//*[@id='btn_public' and not(contains(@style,'display: none'))]) 
   Click Element       id=btn_public
   sleep   1
   ${resp}=    Get Value      id=eBid_price
@@ -571,8 +573,8 @@ Login
   Wait Until Page Contains Element          xpath=(//*[@id='btnShowBid' and not(contains(@style,'display: none'))])
   Click Element       id=btnShowBid
   Sleep   3
-  Wait Until Page Contains Element          id=eBid_price    5
-  Input Text              id=eBid_price         ${amount}
+  Wait Until Page Contains Element          xpath=(//*[@id='eBid_price' and not(contains(@style,'display: none'))]) 
+  Input Text              id=eBid_price     ${amount}
   sleep   1
   Click Element       id=btn_public
 
@@ -581,7 +583,7 @@ Login
   [Documentation]
   ...    ${ARGUMENTS[1]} ==  file
   ...    ${ARGUMENTS[2]} ==  tenderId
-  Wait Until Page Contains Element   xpath=(//*[@id='btnShowBid' and not(contains(@style,'display: none'))])
+  Wait Until Page Contains Element          xpath=(//*[@id='btnShowBid' and not(contains(@style,'display: none'))])
   Click Element     id=btnShowBid
   Sleep   3
   Wait Until Page Contains Element          xpath=(//*[@id='btn_documents_add' and not(contains(@style,'display: none'))]) 
@@ -598,7 +600,7 @@ Login
   ...    ${ARGUMENTS[1]} ==  file
   ...    ${ARGUMENTS[2]} ==  bidId
   Reload Page
-  Wait Until Page Contains Element          id=btn_documents_add    5
+  Wait Until Page Contains Element           xpath=(//*[@id='btn_documents_add' and not(contains(@style,'display: none'))]) 
   Click Element     css=.bt_ReUpload:first-child
   Choose File       xpath=(//*[@id='upload_form']/input[2])   ${ARGUMENTS[1]}
   Sleep   2
@@ -611,7 +613,7 @@ Login
   Wait Until Page Contains Element   xpath=(//*[@id='btnShowBid' and not(contains(@style,'display: none'))])
   Click Element       id=btnShowBid
   Sleep   3
-  Wait Until Page Contains Element  id=btn_documents_add
+  Wait Until Page Contains Element    xpath=(//*[@id='btn_documents_add' and not(contains(@style,'display: none'))])
   Click Element                id=btn_documents_add
   Select From List By Value    id=slFile_documentType      financialLicense
   Choose File                  xpath=(//*[@id='upload_form']/input[2])   ${filepath}
@@ -627,7 +629,7 @@ Login
 Отримати посилання на аукціон для глядача
   [Arguments]  @{ARGUMENTS}
   Switch Browser       ${ARGUMENTS[0]}
-  Wait Until Page Contains Element   id=aPosition_auctionUrl    5
+  Wait Until Page Contains Element   xpath=(//*[@id='aPosition_auctionUrl' and not(contains(@style,'display: none'))])
   Sleep   5
   ${result} =   Get Text  id=aPosition_auctionUrl
   [return]   ${result}
@@ -635,7 +637,7 @@ Login
 Отримати посилання на аукціон для учасника
   [Arguments]  @{ARGUMENTS}
   Switch Browser       ${ARGUMENTS[0]}
-  Wait Until Page Contains Element   id=aPosition_auctionUrl    5
+  Wait Until Page Contains Element   xpath=(//*[@id='aPosition_auctionUrl' and not(contains(@style,'display: none'))])
   Sleep   5
   ${result}=    Get Text  id=aPosition_auctionUrl
   [return]   ${result}
@@ -643,48 +645,48 @@ Login
 Завантажити документ в тендер з типом
   [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${doc_type}
   ueex.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
-  Wait Until Page Contains Element  id=btn_documents_add
-  Click Element                id=btn_documents_add
-  Select From List By Value    id=slFile_documentType      ${doc_type}
-  Choose File                  xpath=(//*[@id='upload_form']/input[2])   ${filepath}
+  Wait Until Page Contains Element       xpath=(//*[@id='btn_documents_add' and not(contains(@style,'display: none'))]) 
+  Click Element                          id=btn_documents_add
+  Select From List By Value              id=slFile_documentType      ${doc_type}
+  Choose File                            xpath=(//*[@id='upload_form']/input[2])   ${filepath}
   Sleep   2
   Click Element     id=upload_button
 
 Завантажити ілюстрацію
   [Arguments]  ${username}  ${tender_uaid}  ${filepath}
   ueex.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
-  Wait Until Page Contains Element  id=btn_documents_add
-  Click Element                id=btn_documents_add
-  Select From List By Value    id=slFile_documentType      illustration
-  Choose File                  xpath=(//*[@id='upload_form']/input[2])   ${filepath}
+  Wait Until Page Contains Element       xpath=(//*[@id='btn_documents_add' and not(contains(@style,'display: none'))])
+  Click Element                          id=btn_documents_add
+  Select From List By Value              id=slFile_documentType      illustration
+  Choose File                            xpath=(//*[@id='upload_form']/input[2])   ${filepath}
   Sleep   2
   Click Element     id=upload_button
 
 Додати Virtual Data Room
   [Arguments]  ${username}  ${tender_uaid}  ${vdr_url}
   ueex.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
-  Wait Until Page Contains Element  id=btn_documents_add
-  Click Element                id=btn_documents_add
-  Select From List By Value    id=slFile_documentType      virtualDataRoom
-  Input text                   id=eFile_url                ${vdr_url}
+  Wait Until Page Contains Element       xpath=(//*[@id='btn_documents_add' and not(contains(@style,'display: none'))])
+  Click Element                          id=btn_documents_add
+  Select From List By Value              id=slFile_documentType      virtualDataRoom
+  Input text                             id=eFile_url                ${vdr_url}
   Click Element     id=upload_button
 
 Додати публічний паспорт активу
   [Arguments]  ${username}  ${tender_uaid}  ${vdr_url}
   ueex.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
-  Wait Until Page Contains Element  id=btn_documents_add
-  Click Element                id=btn_documents_add
-  Select From List By Value    id=slFile_documentType      x_dgfPublicAssetCertificate
-  Input text                   id=eFile_url                ${vdr_url}
+  Wait Until Page Contains Element       xpath=(//*[@id='btn_documents_add' and not(contains(@style,'display: none'))])
+  Click Element                          id=btn_documents_add
+  Select From List By Value              id=slFile_documentType      x_dgfPublicAssetCertificate
+  Input text                             id=eFile_url                ${vdr_url}
   Click Element     id=upload_button
 
 Додати офлайн документ
   [Arguments]  ${username}  ${tender_uaid}  ${accessDetails}
   ueex.Пошук тендера по ідентифікатору   ${username}   ${tender_uaid}
-  Wait Until Page Contains Element  id=btn_documents_add
-  Click Element                id=btn_documents_add
-  Select From List By Value    id=slFile_documentType      x_dgfAssetFamiliarization
-  Input text                   id=eFile_accessDetails      ${accessDetails}
+  Wait Until Page Contains Element       xpath=(//*[@id='btn_documents_add' and not(contains(@style,'display: none'))])
+  Click Element                          id=btn_documents_add
+  Select From List By Value              id=slFile_documentType      x_dgfAssetFamiliarization
+  Input text                             id=eFile_accessDetails      ${accessDetails}
   Click Element     id=upload_button
 
 Отримати інформацію із документа по індексу
@@ -694,9 +696,11 @@ Login
   [return]  ${doc_value}
 
 Отримати інформацію із документа
-  [Arguments]  ${username}  ${tender_uaid}  ${doc_id}  ${field}
-  ${doc_name}=   Get Text     xpath=(//a[contains(@class, 'doc_title') and contains(@class, '${doc_id}')])
-  [Return]   ${doc_name}
+  [Arguments]  ${username}  ${tender_uaid}  ${doc_id}  ${field_name}
+  ${doc_value}=  Run Keyword If   '${field_name}' == 'description'
+  ...     Get Text    xpath=(//span[contains(@class, 'description') and contains(@class, '${doc_id}')]) 
+  ...     ELSE    Get Text   xpath=(//a[contains(@class, 'doc_title') and contains(@class, '${doc_id}')]) 
+  [Return]   ${doc_value}
 
 Відповісти на запитання
   [Arguments]  ${username}  ${tender_uaid}  ${answer_data}  ${item_id}
@@ -779,7 +783,7 @@ Login
 
 Отримати дані із документу пропозиції
   [Arguments]  ${username}  ${tender_uaid}  ${bid_index}  ${document_index}  ${field}
-  ${document_index}=        Evaluate    ${document_index } + 1
+  ${document_index}=        inc         ${document_index}
   ${result}=   Get Text                 xpath=(//*[@id='pnAwardList']/div[last()]/div/div[1]/div/div/div[2]/table[${document_index}]//span[contains(@class, 'documentType')])
   [Return]   ${result}
 
@@ -821,12 +825,11 @@ Login
 Завантажити протокол аукціону
   [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${award_index}
   ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-  Wait Until Page Contains Element   xpath=(//*[@id='btnShowBid' and not(contains(@style,'display: none'))])
+  Wait Until Page Contains Element          xpath=(//*[@id='btnShowBid' and not(contains(@style,'display: none'))])
   Click Element       id=btnShowBid
   Sleep   1
-  Wait Until Page Contains Element          id=btn_documents_add    5
-  Sleep   1
-  Click Element     id=btn_documents_add
+  Wait Until Page Contains Element          xpath=(//*[@id='btn_documents_add' and not(contains(@style,'display: none'))])
+  Click Element                             id=btn_documents_add
   Select From List By Value    id=slFile_documentType      auctionProtocol
   Choose File                  xpath=(//*[@id='upload_form']/input[2])   ${filepath}
   Sleep   2
