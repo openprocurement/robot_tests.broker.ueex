@@ -190,7 +190,7 @@ Login
   ...      ${ARGUMENTS[1]} ==  ${TENDER}
   Switch Browser    ${ARGUMENTS[0]}
   Go to   ${USERS.users['${ARGUMENTS[0]}'].default_page}
-  Sleep  2
+  Wait Until Element Contains  id=records_shown      Y
   Click Element    id=btFilterNumber
   Wait Until Page Contains Element  id=ew_fv_0_value
   Input Text      id=ew_fv_0_value   ${ARGUMENTS[1]}
@@ -205,12 +205,12 @@ Login
 Перейти до сторінки запитань
   Wait Until Page Contains Element   id=questions_ref
   Click Element     id=questions_ref
-  Sleep   1
+  Wait Until Element Contains  id=records_shown      Y
 
 Перейти до сторінки відмін
   Wait Until Page Contains Element   id=cancels_ref
   Click Element     id=cancels_ref
-  Sleep   1
+  Wait Until Element Contains  id=records_shown      Y
 
 Задати питання
   [Arguments]  @{ARGUMENTS}
@@ -478,24 +478,26 @@ Login
 
 Отримати інформацію про questions[${index}].title
   ${index}=          inc              ${index}
-  Wait Until Page Contains Element    xpath=(//span[contains(@class, 'qa_title')])[${index}]
-  ${return_value}=   Get text         xpath=(//span[contains(@class, 'qa_title')])[${index}]
+  Wait Until Page Contains Element    xpath=(//span[contains(@class, 'rec_qa_title')])[${index}]
+  ${return_value}=   Get text         xpath=(//span[contains(@class, 'rec_qa_title')])[${index}]
   [return]           ${return_value}
 
 Отримати інформацію про questions[${index}].description
   ${index}=          inc              ${index}
-  Wait Until Page Contains Element    xpath=(//span[contains(@class, 'qa_description')])[${index}]
-  ${return_value}=   Get text         xpath=(//span[contains(@class, 'qa_description')])[${index}]
+  Wait Until Page Contains Element    xpath=(//span[contains(@class, 'rec_qa_description')])[${index}]
+  ${return_value}=   Get text         xpath=(//span[contains(@class, 'rec_qa_description')])[${index}]
   [return]           ${return_value}
 
 Отримати інформацію про questions[${index}].answer
   ${index}=          inc              ${index}
-  Wait Until Page Contains Element    xpath=(//span[contains(@class, 'qa_answer')])[${index}]
-  ${return_value}=   Get text         xpath=(//span[contains(@class, 'qa_answer')])[${index}]
+  Wait Until Page Contains Element    xpath=(//span[contains(@class, 'rec_qa_answer')])[${index}]
+  ${return_value}=   Get text         xpath=(//span[contains(@class, 'rec_qa_answer')])[${index}]
   [return]           ${return_value}
 
-Отримати інформацію про questions[0].date
-  ${return_value}=   Отримати текст із поля і показати на сторінці   questions[0].date
+Отримати інформацію про questions[${index}].date
+  ${index}=          inc              ${index}
+  Wait Until Page Contains Element    xpath=(//span[contains(@class, 'rec_qa_date')])[${index}]
+  ${return_value}=   Get text         xpath=(//span[contains(@class, 'rec_qa_date')])[${index}]
   ${return_value}=   convert_date_time_to_iso    ${return_value}
   [return]           ${return_value}
 
