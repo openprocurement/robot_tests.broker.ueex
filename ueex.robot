@@ -66,8 +66,9 @@ ${locator.contracts.status}  css=.contract_status
 *** Keywords ***
 Підготувати клієнт для користувача
   [Arguments]  ${username}
-  [Documentation]  Відкрити брaвзер, створити обєкт api wrapper, тощо
-  Open Browser  ${USERS.users['${username}'].homepage}  ${USERS.users['${username}'].browser}  alias=${username}
+  ${alias}=   Catenate   SEPARATOR=   role_  ${username}
+  Set Global Variable   ${BROWSER_ALIAS}   ${alias}
+  Open Browser  ${USERS.users['${username}'].homepage}  ${USERS.users['${username}'].browser}  alias=${BROWSER_ALIAS}
   Set Window Size  @{USERS.users['${username}'].size}
   Set Window Position  @{USERS.users['${username}'].position}
   Run Keyword If  '${username}' != 'ueex_Viewer'  Login  ${username}
@@ -115,7 +116,7 @@ Login
   ${unit}=  Get From Dictionary  ${items[0].unit}  code
   ${cav_id}=  Get From Dictionary  ${items[0].classification}  id
   ${quantity}=  get_quantity  ${items[0]}
-  Switch Browser  ${username}
+  Switch Browser  ${BROWSER_ALIAS}
   Wait Until Page Contains Element  id=btAddTender  20
   Click Element  id=btAddTender
   Wait Until Page Contains Element  id=ePosition_title  20
@@ -176,7 +177,7 @@ Login
 
 Пошук тендера по ідентифікатору
   [Arguments]  ${username}  ${tender_uaid}
-  Switch Browser  ${username}
+  Switch Browser  ${BROWSER_ALIAS}
   Go to  ${USERS.users['${username}'].default_page}
   Wait Until Element Contains  id=records_shown  Y
   Click Element  id=btFilterNumber
@@ -240,7 +241,7 @@ Login
 
 Оновити сторінку з тендером
   [Arguments]  ${username}  ${tender_uaid}
-  Switch Browser  ${username}
+  Switch Browser  ${BROWSER_ALIAS}
   ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
 
 Отримати інформацію із предмету
@@ -567,7 +568,7 @@ Login
   ...      ${ARGUMENTS[0]} ==  ${username}
   ...      ${ARGUMENTS[1]} ==  ${tender_uaid}
   ...      ${ARGUMENTS[2]} ==  ${lot_id} for multilot request in auction stage
-  Switch Browser  ${username}
+  Switch Browser  ${BROWSER_ALIAS}
   Wait Until Page Contains Element  xpath=(//*[@id='aPosition_auctionUrl' and not(contains(@style,'display: none'))])
   ${result} =  Get Text  id=aPosition_auctionUrl
   [return]  ${result}
@@ -578,7 +579,7 @@ Login
   ...      ${ARGUMENTS[0]} ==  ${username}
   ...      ${ARGUMENTS[1]} ==  ${tender_uaid}
   ...      ${ARGUMENTS[2]} ==  ${lot_id} for multilot request in auction stage
-  Switch Browser  ${username}
+  Switch Browser  ${BROWSER_ALIAS}
   Wait Until Page Contains Element  xpath=(//*[@id='aPosition_auctionUrl' and not(contains(@style,'display: none'))])
   ${result}=  Get Text  id=aPosition_auctionUrl
   [return]  ${result}
