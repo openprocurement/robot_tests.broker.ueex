@@ -3,7 +3,7 @@ import pytz
 import dateutil.parser
 import urllib
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from robot.libraries.BuiltIn import BuiltIn
 
 def get_webdriver():
@@ -28,6 +28,9 @@ def get_quantity(item):
 
 def get_tenderAttempts(item):
     return str(item.tenderAttempts)
+
+def get_minNumberOfQualifiedBids(item):
+    return str(item.minNumberOfQualifiedBids)
 
 def get_tender_dates(initial_tender_data, key):
     data_period = initial_tender_data.data.auctionPeriod
@@ -72,3 +75,9 @@ def download_file(url, file_name, output_dir):
 
 def inc(value):
     return int(value) + 1
+
+def convert_DMY_ISO(v_date):
+    time_zone = pytz.timezone('Europe/Kiev')
+    d_date = datetime.strptime(v_date, '%d.%m.%Y')
+    localized_date = time_zone.localize(d_date)
+    return localized_date.isoformat()
