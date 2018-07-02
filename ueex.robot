@@ -1036,7 +1036,7 @@ Login
   Input Text  id=e_auction_0_registrationFee_amount  ${registrationFee}
   Input Text  id=e_auction_0_bankAccount_bankName  ${auction.bankAccount.bankName}
   Input Text  id=e_auction_0_bankAccount_description  ${auction.bankAccount.description}
-  Встановити параміетри рахунку  ${auction.bankAccount.accountIdentification[0]}
+  Встановити параметри рахунку  ${auction.bankAccount.accountIdentification[0]}
 
 Встановити параметри рахунку 
   [Arguments]  ${accountIdentification}
