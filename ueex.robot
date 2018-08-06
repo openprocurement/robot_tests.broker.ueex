@@ -141,8 +141,8 @@ Login
   Wait Until Element Contains  id=records_shown  Y
   Input Text  id=ew_fv_0_value  ${tender_uaid}
   Click Element  id=btnFilter
-  Wait Until Element Is Visible  id=tw_tr_10_title
-  Click Element  id=tw_tr_10_title
+  Wait Until Element Contains  id=records_shown  Y
+  Click Element   xpath=(//a[contains(@class, 'record_title')])
   Wait Until Element Is Visible  xpath=(//*[@id='tPosition_status'])
 
 Перейти до сторінки запитань
@@ -189,33 +189,25 @@ Login
   [Arguments]  ${username}  ${tender_uaid}
   ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
 
+Отримати інформацію із предмету
+  [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${field_name}
+  ueex.Отримати інформацію з поля предмету  ${username}  ${tender_uaid}  ${item_id}  ${field_name}
+
 Отримати інформацію з поля предмету
   [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${field_name}
-  ${return_value}=  Отримати інформацію з елементу за шляхом //div[starts-with(@id, 'pn_w_item') and contains(@class, '${item_id}')]//*[@name= '${field_name}']
-  ${return_value}=  Run Keyword If  '${field_name}' == 'contractPeriod.startDate'  ueex_service.convert_DMY_ISO  ${return_value}
-  ...  ELSE IF  '${field_name}' == 'contractPeriod.endDate'  ueex_service.convert_DMY_ISO  ${return_value}
-  ...  ELSE IF  '${field_name}' == 'quantity'  Convert To Number  ${return_value.replace(' ', '').replace(',', '.')}
-  ...  ELSE  Set Variable  ${return_value}
+  ${return_value}=  ueex.Отримати інформацію із тендера  ${username}  ${tender_uaid}  items[${item_id}].${field_name}
   [return]  ${return_value}
 
 Отримати інформацію із тендера
   [Arguments]  ${username}  ${tender_uaid}  ${fieldname}
+  ${status}  ${message}=  Run Keyword And Ignore Error  Should Start With  ${fieldname}  'questions'
+  Run Keyword And Return If  '${status}' != 'FAIL'  Перейти до сторінки запитань
   ${return_value}=  Run Keyword  Отримати інформацію про ${fieldname}
   [return]  ${return_value}
 
 Отримати текст із поля і показати на сторінці
   [Arguments]  ${fieldname}
   ${return_value}=  Отримати інформацію з елементу за шляхом //*[@name = '${fieldname}']
-  [return]  ${return_value}
-
-Отримати інформацію про tenderAttempts
-  ${return_value}=  Отримати текст із поля і показати на сторінці  tenderAttempts
-  ${return_value}=  Convert To Integer  ${return_value}
-  [return]  ${return_value}
-
-Отримати інформацію про minNumberOfQualifiedBids
-  ${return_value}=  Отримати текст із поля і показати на сторінці  minNumberOfQualifiedBids
-  ${return_value}=  Convert To Integer  ${return_value}
   [return]  ${return_value}
 
 Отримати інформацію про eligibilityCriteria
@@ -226,21 +218,6 @@ Login
   Wait Until Element Is Visible  xpath=(//*[@id='tPosition_status'])
   Sleep  2
   ${return_value}=  Get Text  id=tPosition_status
-  [return]  ${return_value}
-
-Отримати інформацію про value.amount
-  ${return_value}=  Отримати текст із поля і показати на сторінці  value.amount
-  ${return_value}=  Convert To Number  ${return_value.replace(' ', '').replace(',', '.')}
-  [return]  ${return_value}
-
-Отримати інформацію про minimalStep.amount
-  ${return_value}=  Отримати текст із поля і показати на сторінці  minimalStep.amount
-  ${return_value}=  Convert To Number  ${return_value.replace(' ', '').replace(',', '.')}
-  [return]  ${return_value}
-
-Отримати інформацію про guarantee.amount
-  ${return_value}=  Отримати текст із поля і показати на сторінці  guarantee.amount
-  ${return_value}=  Convert To Number  ${return_value.replace(' ', '').replace(',', '.')}
   [return]  ${return_value}
 
 Внести зміни в тендер
@@ -255,56 +232,6 @@ Login
   Wait Until Page Contains  Публікацію виконано
   ${result_field}=  Get Value  ${locator.edit.${fieldname}}
   Should Be Equal  ${result_field}  ${fieldvalue}
-
-Отримати інформацію про items[${index}].quantity
-  ${return_value}=  Отримати текст із поля і показати на сторінці  items[${index}].quantity
-  ${return_value}=  Convert To Number  ${return_value.replace(' ', '').replace(',', '.')}
-  [return]  ${return_value}
-
-Отримати інформацію про items[${index}].unit.code
-  ${return_value}=  Отримати текст із поля і показати на сторінці  items[${index}].unit.code
-  [return]  ${return_value}
-
-Отримати інформацію про items[${index}].unit.name
-  ${return_value}=  Отримати текст із поля і показати на сторінці  items[${index}].unit.name
-  [return]  ${return_value}
-
-Отримати інформацію про items[${index}].description
-  ${return_value}=  Отримати текст із поля і показати на сторінці  items[${index}].description
-  [return]  ${return_value}
-
-Отримати інформацію про items[${index}].contractPeriod.startDate
-  ${date_value}=  Отримати текст із поля і показати на сторінці  items[${index}].contractPeriod.startDate
-  ${return_value}=  ueex_service.convert_DMY_ISO  ${date_value}
-  [return]  ${return_value}
-
-Отримати інформацію про items[${index}].contractPeriod.endDate
-  ${date_value}=  Отримати текст із поля і показати на сторінці  items[${index}].contractPeriod.endDate
-  ${return_value}=  ueex_service.convert_DMY_ISO  ${date_value}
-  [return]  ${return_value}
-
-Отримати інформацію про items[${index}].classification.id
-  ${return_value}=  Отримати текст із поля і показати на сторінці  items[${index}].classification.id
-  [return]  ${return_value}
-
-Отримати інформацію про items[${index}].classification.scheme
-  ${return_value}=  Отримати текст із поля і показати на сторінці  items[${index}].classification.scheme
-  [return]  ${return_value}
-
-Отримати інформацію про items[${index}].classification.description
-  ${return_value}=  Отримати текст із поля і показати на сторінці  items[${index}].classification.description
-  [return]  ${return_value}
-
-Отримати інформацію про items[${index}].additionalClassifications[0].id
-  ${return_value}=  Отримати текст із поля і показати на сторінці  items[${index}].additionalClassifications.id
-  [return]  ${return_value}
-
-Отримати інформацію про items[${index}].additionalClassifications[0].scheme
-  ${return_value}=  Отримати текст із поля і показати на сторінці  items[${index}].additionalClassifications.scheme
-  [return]  ${return_value}
-
-Отримати інформацію про items[${index}].additionalClassifications[0].description
-  ${return_value}=  Отримати текст із поля і показати на сторінці  items[${index}].additionalClassifications.description
 
 
 Отримати інформацію про value.currency
@@ -366,56 +293,6 @@ Login
   ${date_value}=  Get Text  id=tdtpPosition_enquiryPeriod_endDate_Date
   ${time_value}=  Get Text  id=tePosition_enquiryPeriod_endDate_Time
   ${return_value}=  convert_date_to_iso  ${date_value}  ${time_value}
-  [return]  ${return_value}
-
-Отримати інформацію про items[0].deliveryAddress.countryName
-  ${return_value}=  Отримати текст із поля і показати на сторінці  items[0].deliveryAddress.countryName
-  [return]  ${return_value.split(', ')[0]}
-
-Отримати інформацію про items[0].deliveryAddress.postalCode
-  ${return_value}=  Отримати текст із поля і показати на сторінці  items[0].deliveryAddress.postalCode
-  [return]  ${return_value.split(', ')[1]}
-
-Отримати інформацію про items[0].deliveryAddress.region
-  ${return_value}=  Отримати текст із поля і показати на сторінці  items[0].deliveryAddress.region
-  [return]  ${return_value.split(', ')[2]}
-
-Отримати інформацію про items[0].deliveryAddress.locality
-  ${return_value}=  Отримати текст із поля і показати на сторінці  items[0].deliveryAddress.locality
-  [return]  ${return_value.split(', ')[3]}
-
-Отримати інформацію про items[0].deliveryAddress.streetAddress
-  ${return_value}=  Отримати текст із поля і показати на сторінці  items[0].deliveryAddress.streetAddress
-  [return]  ${return_value.split(', ')[4]}
-
-Отримати інформацію про items[0].deliveryDate.endDate
-  ${date_value}=  Отримати текст із поля і показати на сторінці  items[0].deliveryDate.endDate
-  ${return_value}=  ueex_service.convert_date  ${date_value}
-  [return]  ${return_value}
-
-Отримати інформацію про questions[${index}].title
-  ${index}=  inc  ${index}
-  Wait Until Element Is Visible  xpath=(//span[contains(@class, 'rec_qa_title')])[${index}]
-  ${return_value}=  Get text  xpath=(//span[contains(@class, 'rec_qa_title')])[${index}]
-  [return]  ${return_value}
-
-Отримати інформацію про questions[${index}].description
-  ${index}=  inc  ${index}
-  Wait Until Element Is Visible  xpath=(//span[contains(@class, 'rec_qa_description')])[${index}]
-  ${return_value}=  Get text  xpath=(//span[contains(@class, 'rec_qa_description')])[${index}]
-  [return]  ${return_value}
-
-Отримати інформацію про questions[${index}].answer
-  ${index}=  inc  ${index}
-  Wait Until Element Is Visible  xpath=(//span[contains(@class, 'rec_qa_answer')])[${index}]
-  ${return_value}=  Get text  xpath=(//span[contains(@class, 'rec_qa_answer')])[${index}]
-  [return]  ${return_value}
-
-Отримати інформацію про questions[${index}].date
-  ${index}=  inc  ${index}
-  Wait Until Element Is Visible  xpath=(//span[contains(@class, 'rec_qa_date')])[${index}]
-  ${return_value}=  Get text  xpath=(//span[contains(@class, 'rec_qa_date')])[${index}]
-  ${return_value}=  convert_date_time_to_iso  ${return_value}
   [return]  ${return_value}
 
 Отримати інформацію із запитання
@@ -527,8 +404,6 @@ Login
 
 Завантажити документ в ставку
   [Arguments]  ${username}  ${file}  ${bid_id}
-  Wait Until Element Is Visible  xpath=(//*[@id='btnShowBid'])
-  Click Element  id=btnShowBid
   Wait Until Element Is Visible  xpath=(//*[@id='btn_documents_add'])
   Click Element  id=btn_documents_add
   Choose File  xpath=(//*[@id='upload_form']/input[2])  ${file}
@@ -988,7 +863,8 @@ Login
 Створити лот
   [Arguments]    ${username}  ${tender_data}  ${asset_uaid}
   ueex.Пошук об’єкта МП по ідентифікатору  ${username}  ${asset_uaid}
-  Click Element   id=btnCreateLot
+  Wait Until Element Is Visible  id=btnCreateLot
+  Click Element  id=btnCreateLot
   Input text  id=e_сreateLot_decisionID    ${tender_data.data.decisions[0].decisionID}
   ${decisionDate}=  convert_ISO_DMY  ${tender_data.data.decisions[0].decisionDate}
   Input text  id=dtp_сreateLot_decisionDate  ${decisionDate}
@@ -1012,7 +888,7 @@ Login
   Click Element  id=btnFilter
   Wait Until Element Contains  id=records_shown  Y
   Wait Until Element Is Visible  xpath=(//a[contains(@class, 'record_title')])
-  Click Element   xpath=(//a[contains(@class, 'record_title')])
+  Click Element  xpath=(//a[contains(@class, 'record_title')])
   Wait Until Element Is Visible  xpath=(//*[@id='tPosition_status'])
 
 Додати умови проведення аукціону
@@ -1027,7 +903,7 @@ Login
   Input Text  id=e_auction_0_value_amount  ${value_amount}
   ${value_valueaddedtaxincluded}=  Convert To String  ${auction.value.valueAddedTaxIncluded}
   UnSelect Checkbox  id=cb_auction_0_value_valueAddedTaxIncluded
-  Run Keyword If  ${value_valueaddedtaxincluded} == 'True'  Select Checkbox  id=cb_auction_0_value_valueAddedTaxIncluded
+  Run Keyword If  ${value_valueaddedtaxincluded}  Click Element  id=lcb_auction_0_value_valueAddedTaxIncluded
   ${minimalStep}=  Convert To String  ${auction.minimalStep.amount}
   Input Text  id=e_auction_0_minimalStep_amount  ${minimalStep}
   ${guarantee_amount}=  Convert To String  ${auction.guarantee.amount}
@@ -1120,15 +996,25 @@ Login
   ...  ELSE  ueex.Внести зміни до елементу за шляхом  //*[@name= 'auctions[${item_id}].${fieldname}']  ${fieldname}  ${fieldvalue}
   Click Element  id=btnPublic
 
+Активувати процедуру
+  [Arguments]  ${username}  ${tender_uaid}
+  Sleep   60
+  ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+
 Отримати інформацію про ${fieldname}
   ${fieldname_end}=	 Remove String Using Regexp  ${fieldname}	.*].
   ${return_value}=  Отримати інформацію з елементу за шляхом //*[@name = '${fieldname}']
   ${return_value}=  Run Keyword If  '${fieldname_end}' == 'tenderAttempts'  Convert To Integer  ${return_value.replace(' ', '').replace(',', '.')}
+  ...  ELSE IF  '${fieldname_end}' == 'minNumberOfQualifiedBids'  Convert To Integer  ${return_value.replace(' ', '').replace(',', '.')}
+  ...  ELSE IF  '${fieldname_end}' == 'value.amount'  Convert To Number  ${return_value.replace(' ', '').replace(',', '.')}
   ...  ELSE IF  '${fieldname_end}' == 'value.amount'  Convert To Number  ${return_value.replace(' ', '').replace(',', '.')}
   ...  ELSE IF  '${fieldname_end}' == 'registrationFee.amount'  Convert To Number  ${return_value.replace(' ', '').replace(',', '.')}
   ...  ELSE IF  '${fieldname_end}' == 'guarantee.amount'  Convert To Number  ${return_value.replace(' ', '').replace(',', '.')}
   ...  ELSE IF  '${fieldname_end}' == 'minimalStep.amount'  Convert To Number  ${return_value.replace(' ', '').replace(',', '.')}
   ...  ELSE IF  '${fieldname_end}' == 'dutchSteps'  Convert To Integer  ${return_value.replace(' ', '').replace(',', '.')}
+  ...  ELSE IF  '${fieldname_end}' == 'quantity'  Convert To Number  ${return_value.replace(' ', '').replace(',', '.')}
+  ...  ELSE IF  '${fieldname_end}' == 'Date'  convert_date_time_to_iso  ${return_value}
+  ...  ELSE IF  '${fieldname_end}' == 'date'  convert_date_time_to_iso  ${return_value}
   ...  ELSE  Set Variable  ${return_value}
   [Return]  ${return_value}
 
