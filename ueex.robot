@@ -142,7 +142,7 @@ Login
   Input Text  id=ew_fv_0_value  ${tender_uaid}
   Click Element  id=btnFilter
   Wait Until Element Contains  id=records_shown  Y
-  Click Element   xpath=(//a[contains(@class, 'record_title')])
+  Click Element  xpath=(//a[contains(@class, 'record_title')])
   Wait Until Element Is Visible  xpath=(//*[@id='tPosition_status'])
 
 Перейти до сторінки запитань
@@ -397,6 +397,7 @@ Login
   ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
   Wait Until Element Is Visible  xpath=(//*[@id='btnShowBid'])
   Click Element  id=btnShowBid
+  Wait Until Element Is Visible  xpath=(//*[@id='bid_load_status'])  10
   Wait Until Element Is Visible  xpath=(//*[@id='eBid_price'])
   Input Text  id=eBid_price  ${amount}
   sleep  1
@@ -404,7 +405,8 @@ Login
 
 Завантажити документ в ставку
   [Arguments]  ${username}  ${file}  ${bid_id}
-  Wait Until Element Is Visible  xpath=(//*[@id='btn_documents_add'])
+  Reload Page
+  Wait Until Element Is Visible  xpath=(//*[@id='bid_load_status'])  10
   Click Element  id=btn_documents_add
   Choose File  xpath=(//*[@id='upload_form']/input[2])  ${file}
   Sleep  2
@@ -415,7 +417,7 @@ Login
 Змінити документ в ставці
   [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${docid}
   Reload Page
-  Wait Until Element Is Visible  xpath=(//*[@id='btn_documents_add'])
+  Wait Until Element Is Visible  xpath=(//*[@id='bid_load_status'])  10
   Click Element  css=.bt_ReUpload:first-child
   Choose File  xpath=(//*[@id='upload_form']/input[2])  ${filepath}
   Sleep  2
@@ -798,7 +800,7 @@ Login
   Click Element  id=btnFilter
   Wait Until Element Contains  id=records_shown  Y
   Wait Until Element Is Visible  xpath=(//a[contains(@class, 'record_title')])
-  Click Element   xpath=(//a[contains(@class, 'record_title')])
+  Click Element  xpath=(//a[contains(@class, 'record_title')])
   Wait Until Element Is Visible  xpath=(//*[@id='tPosition_status'])
 
 Отримати інформацію із об'єкта МП
