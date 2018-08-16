@@ -343,16 +343,6 @@ Login
   Click Element  id=SendAnswer
   Wait Until Page Contains  Публікацію виконано
 
-Відповісти на питання
-  [Arguments]  ${username}  ${tender_uaid}  ${question}  ${answer_data}
-  ${answer}=  Get From Dictionary  ${answer_data.data}  answer
-  Перейти до сторінки запитань
-  Wait Until Element Is Visible  xpath=(//*[contains(@class, 'bt_addAnswer')])
-  Click Element  css=.bt_addAnswer:first-child
-  Input Text  id=e_answer  ${answer}
-  Click Element  id=SendAnswer
-  Wait Until Page Contains  Публікацію виконано
-
 Подати цінову пропозицію
   [Arguments]  ${username}  ${tender_uaid}  ${bid_data}
   ${amount}=  get_str  ${bid_data.data.value.amount}
@@ -439,11 +429,6 @@ Login
   Wait Until Element Contains  id=tFileMessage  Файл завантажено
   Reload Page
 
-Отримати інформацію про bids
-  [Arguments]  ${username}  ${tender_uaid}
-  Викликати для учасника  ${username}  Оновити сторінку з тендером  ${tender_uaid}
-  Click Element  id=bids_ref
-
 Отримати посилання на аукціон для глядача
   [Arguments]  ${username}  @{arguments}
   [Documentation]
@@ -519,8 +504,8 @@ Login
 Отримати кількість предметів в тендері
   [Arguments]  ${username}  ${tender_uaid}
   ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-  ${return_value}=  Get Matching Xpath Count  xpath=(//div[starts-with(@id, 'pn_w_item')])
-  [return]  ${return_value}
+  ${return_value}=  Get Matching Xpath Count  xpath=(//*[@id='pn_itemsContent']//div[starts-with(@id,’Tender_item’)])
+  [Return]  ${return_value}
 
 Додати предмет закупівлі
   [Arguments]  ${username}  ${tender_uaid}  ${item}
@@ -572,6 +557,51 @@ Login
   ${bid_doc_number}=  Get Matching Xpath Count  xpath=(//*[@id='pnAwardList']/div[last()]/div/div[1]/div/div/div[2]/table)
   [Return]  ${bid_doc_number}
 
+Отримати кількість авардів в тендері
+  [Arguments]  ${username}  ${tender_uaid}
+  ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+  ${return_value}=  Get Matching Xpath Count  xpath=(//div[@id='pn_Award_content']//div[starts-with(@id, 'pn_award_Record_')])
+  [Return]  ${return_value}
+
+Завантажити документ в авард
+  [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${award_index}  ${documentType}
+  ${award_index}=  inc  ${award_index}
+  ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+  Wait Until Element Is Visible  xpath=(//*[@id='tPosition_status'])
+  Click Element  xpath=(//*[@id='pnAwardList']/div[${award_index}]//div[contains(@class, 'award_docs')]//span[contains(@class, 'add_document')])
+  Select From List By Value  id=slFile_documentType  ${documentType}
+  Choose File  xpath=(//*[@id='upload_form']/input[2])  ${filepath}
+  Sleep  2
+  Click Element  id=upload_button
+  Wait Until Element Contains  id=tFileMessage  Файл завантажено
+  Reload Page
+
+Завантажити протокол аукціону в авард
+  [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${award_index}
+  Завантажити документ в авард  ${username}  ${tender_uaid}  ${filepath}  ${award_index}  auctionProtocol
+
+Завантажити протокол погодження в авард
+  [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${award_index}
+  Завантажити документ в авард  ${username}  ${tender_uaid}  ${filepath}  ${award_index}  admissionProtocol
+
+Завантажити протокол дискваліфікації в авард
+  [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${award_index}
+  Завантажити документ в авард  ${username}  ${tender_uaid}  ${filepath}  ${award_index}  rejectionProtocol
+
+Активувати кваліфікацію учасника
+  [Arguments]  ${username}  ${tender_uaid}
+  ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+  Wait Until Element Is Visible  xpath=(//*[@id='pnAwardList']//*[contains(@class, 'ssp_admission_button')])
+  Sleep  1
+  Click Element  xpath=(//*[@id='pnAwardList']//*[contains(@class, 'ssp_admission_button')])
+  Wait Until Page Contains  Публікацію виконано
+
+Отримати інформацію про awards[${index}].status
+  ${index}=  inc  ${index}
+  Wait Until Element Is Visible  xpath=(//span[contains(@class, 'rec_award_status')])[${index}]
+  ${return_value}=  Get text  xpath=(//span[contains(@class, 'rec_award_status')])[${index}]
+  [return]  ${return_value}
+
 Скасування рішення кваліфікаційної комісії
   [Arguments]  ${username}  ${tender_uaid}  ${award_index}
   ${award_index}=  inc  ${award_index}
@@ -584,9 +614,9 @@ Login
   [Arguments]  ${username}  ${tender_uaid}  ${award_index}
   ${award_index}=  inc  ${award_index}
   ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-  Wait Until Element Is Visible  xpath=(//*[@id='pnAwardList']/div[${award_index}]//*[contains(@class, 'award_button')])
+  Wait Until Element Is Visible  xpath=(//*[@id='pnAwardList']/div[${award_index}]//*[contains(@class, 'award_protocol_button')])
   Sleep  1
-  Click Element  xpath=(//*[@id='pnAwardList']/div[${award_index}]//*[contains(@class, 'award_button')])
+  Click Element  xpath=(//*[@id='pnAwardList']/div[${award_index}]//*[contains(@class, 'award_protocol_button')])
   Wait Until Page Contains  Публікацію виконано
 
 Дискваліфікувати постачальника
@@ -598,43 +628,34 @@ Login
   Click Element  xpath=(//*[@id='pnAwardList']/div[${award_index}]//*[contains(@class, 'Reject_button')])
   Wait Until Page Contains  Публікацію виконано
 
-Завантажити документ рішення кваліфікаційної комісії
-  [Arguments]  ${username}  ${filepath}  ${tender_uaid}  ${award_index}
-  ${award_index}=  inc  ${award_index}
-  ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-  Wait Until Element Is Visible  xpath=(//*[@id='tPosition_status'])
-  Click Element  xpath=(//*[@id='pnAwardList']/div[${award_index}]//div[contains(@class, 'award_docs')]//span[contains(@class, 'add_document')])
-  Choose File  xpath=(//*[@id='upload_form']/input[2])  ${filepath}
-  Sleep  2
-  Click Element  id=upload_button
-  Wait Until Element Contains  id=tFileMessage  Файл завантажено
-  Reload Page
+############################### КОНТРАКТ ###################################################
 
-Завантажити протокол аукціону
-  [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${award_index}
-  ${award_index}=  inc  ${award_index}
-  ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-  Wait Until Element Is Visible  xpath=(//*[@id='btnShowBid'])
-  Click Element  id=btnShowBid
-  Wait Until Element Is Visible  xpath=(//*[@id='btn_documents_add'])
-  Click Element  id=btn_documents_add
-  Select From List By Value  id=slFile_documentType  auctionProtocol
-  Choose File  xpath=(//*[@id='upload_form']/input[2])  ${filepath}
-  Sleep  2
-  Click Element  id=upload_button
-  Wait Until Element Contains  id=tFileMessage  Файл завантажено
-
-Завантажити угоду до тендера
-  [Arguments]  ${username}  ${tender_uaid}  ${contract_num}  ${filepath}
+Завантажити документ в угоду
+  [Arguments]  ${username}  ${tender_uaid}  ${contract_num}  ${filepath}  ${documentType}
   ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
   Wait Until Element Is Visible  xpath=(//div[contains(@id, 'pn_doc_contract_')][1]//span[contains(@class, 'add_document')])
   Click Element  xpath=(//div[contains(@id, 'pn_doc_contract_')][1]//span[contains(@class, 'add_document')])
-  Select From List By Value  id=slFile_documentType  contractSigned
+  Select From List By Value  id=slFile_documentType  ${documentType}
   Choose File  xpath=(//*[@id='upload_form']/input[2])  ${filepath}
   Sleep  2
   Click Element  id=upload_button
   Wait Until Element Contains  id=tFileMessage  Файл завантажено
   Reload Page
+
+Завантажити угоду до тендера
+  [Arguments]  ${username}  ${tender_uaid}  ${contract_index}  ${filepath}
+  Завантажити документ в угоду  ${username}  ${tender_uaid}  ${contract_index}  ${filepath}  contractSigned
+
+Завантажити протокол скасування в контракт
+  [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${contract_index}
+  Завантажити документ в угоду  ${username}  ${tender_uaid}  ${contract_index}  ${filepath}  rejectionProtocol
+
+Встановити дату підписання угоди
+  [Arguments]  ${username}  ${tender_uaid}  ${contract_num}  ${fieldvalue}
+  ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+  Внести дату та час  _contract_0_dateSigned   ${fieldvalue}
+  Wait Until Element Is Visible  xpath=(//div[contains(@id, 'pn_control_contract')][1]//span[contains(@class, 'contract_save')])
+  Click Element  xpath=(//div[contains(@id, 'pn_control_contract')][1]//span[contains(@class, 'contract_save')])
 
 Підтвердити підписання контракту
   [Arguments]  ${username}  ${tender_uaid}  ${contract_num}
@@ -644,32 +665,16 @@ Login
   Click Element  xpath=(//div[contains(@id, 'pn_control_contract')][1]//span[contains(@class, 'contract_register')])
   Wait Until Page Contains  Публікацію виконано
 
-Завантажити протокол аукціону в авард
-  [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${award_index}
-  ${award_index}=  inc  ${award_index}
+Скасувати контракт
+  [Arguments]  ${username}  ${tender_uaid}  ${contract_num}
+  ${file_path}  ${file_title}  ${file_content}=  create_fake_doc
   ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-  Wait Until Element Is Visible  xpath=(//*[@id='tPosition_status'])
-  Click Element  xpath=(//*[@id='pnAwardList']/div[${award_index}]//div[contains(@class, 'award_docs')]//span[contains(@class, 'add_document')])
-  Select From List By Value  id=slFile_documentType  auctionProtocol
-  Choose File  xpath=(//*[@id='upload_form']/input[2])  ${filepath}
-  Sleep  2
-  Click Element  id=upload_button
-  Wait Until Element Contains  id=tFileMessage  Файл завантажено
-  Reload Page
-
-Підтвердити наявність протоколу аукціону
-  [Arguments]  ${username}  ${tender_uaid}  ${award_index}
-  ${award_index}=  inc  ${award_index}
-  ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
-  Wait Until Element Is Visible  xpath=(//*[@id='tPosition_status'])
-  Click Element  xpath=(//*[@id='pnAwardList']/div[${award_index}]//*[contains(@class, 'award_protocol_button')])
+  Wait Until Element Is Visible  xpath=(//div[contains(@id, 'pn_control_contract')][1]//span[contains(@class, 'contract_cancelled')])
+  Click Element  xpath=(//div[contains(@id, 'pn_control_contract')][1]//span[contains(@class, 'contract_cancelled')])
   Wait Until Page Contains  Публікацію виконано
 
-Отримати інформацію про awards[${index}].status
-  ${index}=  inc  ${index}
-  Wait Until Element Is Visible  xpath=(//span[contains(@class, 'rec_award_status')])[${index}]
-  ${return_value}=  Get text  xpath=(//span[contains(@class, 'rec_award_status')])[${index}]
-  [return]  ${return_value}
+
+############################### об'єкт МП ###################################################
 
 Створити об'єкт МП
   [Arguments]  ${username}  ${tender_data}
@@ -841,8 +846,8 @@ Login
 Отримати кількість активів в об'єкті МП
   [Arguments]  ${username}  ${asset_uaid}
   ueex.Пошук об’єкта МП по ідентифікатору  ${username}  ${asset_uaid}
-  ${return_value}=  Get Matching Xpath Count  xpath=(//div[starts-with(@id, 'pn_w_item')])
-  [return]  ${return_value}
+  ${return_value}=  Get Matching Xpath Count  xpath=(//div[@id='pn_itemsContent']//div[starts-with(@id, 'pn_w_item')])
+  [Return]  ${return_value}
 
 Завантажити документ в об'єкт МП з типом
   [Arguments]  ${username}  ${tender_uaid}  ${filepath}  ${doc_type}
@@ -861,6 +866,8 @@ Login
   [Arguments]  ${username}  ${asset_uaid}
   ueex.Пошук об’єкта МП по ідентифікатору  ${username}  ${asset_uaid}
   Click Element  id=btnCancel
+
+############################### Повідомлення МП ###################################################
 
 Створити лот
   [Arguments]    ${username}  ${tender_data}  ${asset_uaid}
@@ -918,9 +925,10 @@ Login
 
 Встановити параметри рахунку 
   [Arguments]  ${accountIdentification}
-  Run Keyword If  '${accountIdentification.scheme}' == 'UA-EDR'  Input Text  id=e_auction_0_bankAccount_code  ${accountIdentification.id}
-  Run Keyword If  '${accountIdentification.scheme}' == 'UA-MFO'  Input Text  id=e_auction_0_bankAccount_mfo  ${accountIdentification.id}
-  Run Keyword If  '${accountIdentification.scheme}' == 'accountNumber'  Input Text  id=e_auction_0_bankAccount_accountNumber  ${accountIdentification.id}
+  ${accountIdentification_id}=  Convert To String  ${accountIdentification.id}
+  Run Keyword If  '${accountIdentification.scheme}' == 'UA-EDR'  Input Text  id=e_auction_0_bankAccount_code  ${accountIdentification_id}
+  Run Keyword If  '${accountIdentification.scheme}' == 'UA-MFO'  Input Text  id=e_auction_0_bankAccount_mfo  ${accountIdentification_id}
+  Run Keyword If  '${accountIdentification.scheme}' == 'accountNumber'  Input Text  id=e_auction_0_bankAccount_accountNumber  ${accountIdentification_id}
 
 Додати умови проведення аукціону номер 1
   [Arguments]  ${username}  ${lot_uaid}  ${auction}
@@ -1003,6 +1011,8 @@ Login
   Sleep   60
   ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
 
+############################### Сервіс ###################################################
+
 Отримати інформацію про ${fieldname}
   ${fieldname_end}=	 Remove String Using Regexp  ${fieldname}	.*].
   ${return_value}=  Отримати інформацію з елементу за шляхом //*[@name = '${fieldname}']
@@ -1038,12 +1048,6 @@ Login
   ...  ELSE  Set Variable  ${fieldvalue}
   Input text  xpath=(//div[@id='page_content']${elementname})  ${fieldvalue}
   Click Element  id=btnPublic
-
-Внести дату
-  [Arguments]  ${prefix}  ${_value}
-  ${_Date}=  convert_ISO_DMY  ${_value}
-  Input Text  id=dtp${prefix}_Date  ${_Date}
-  Input Text  id=e${prefix}_Time  ${_Time}
 
 Внести дату та час
   [Arguments]  ${prefix}  ${_value}
