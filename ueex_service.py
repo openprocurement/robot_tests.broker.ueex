@@ -18,27 +18,6 @@ def is_checked(locator):
 def get_str(value):
     return str(value)
 
-def get_budget(initial_tender_data):
-    return str(initial_tender_data.data.value.amount)
-
-def get_step_rate(initial_tender_data):
-    return str(initial_tender_data.data.minimalStep.amount)
-
-def get_quantity(item):
-    return str(item.quantity)
-
-def get_tenderAttempts(item):
-    return str(item.tenderAttempts)
-
-def get_tender_dates(initial_tender_data, key):
-    data_period = initial_tender_data.data.auctionPeriod
-    start_dt = dateutil.parser.parse(data_period['startDate'])
-    data = {
-        'StartDate': start_dt.strftime("%d.%m.%Y"),
-        'StartTime': start_dt.strftime("%H:%M"),
-    }
-    return data.get(key, '')
-
 def convert_ISO_DMY(isodate):
     return dateutil.parser.parse(isodate).strftime("%d.%m.%Y")
 
@@ -76,18 +55,6 @@ def download_file(url, file_name, output_dir):
 
 def inc(value):
     return int(value) + 1
-
-def get_minNumberOfQualifiedBids(item):
-    return str(item.minNumberOfQualifiedBids)
-
-def convert_DMY_ISO(v_date):
-    time_zone = pytz.timezone('Europe/Kiev')
-    d_date = datetime.strptime(v_date, '%d.%m.%Y')
-    localized_date = time_zone.localize(d_date)
-    return localized_date.isoformat()
-
-def field_name(field):
-    return field.replace('.','_').replace('[','_').replace(']','_')
 
 def convert_iso8601Duration(duration):
    if duration == u'P1M':
