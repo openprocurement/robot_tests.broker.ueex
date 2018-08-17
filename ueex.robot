@@ -191,7 +191,8 @@ Login
 
 Отримати інформацію із предмету
   [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${field_name}
-  ueex.Отримати інформацію з поля предмету  ${username}  ${tender_uaid}  ${item_id}  ${field_name}
+  ${return_value}=  ueex.Отримати інформацію з поля предмету  ${username}  ${tender_uaid}  ${item_id}  ${field_name}
+  [return]  ${return_value}
 
 Отримати інформацію з поля предмету
   [Arguments]  ${username}  ${tender_uaid}  ${item_id}  ${field_name}
