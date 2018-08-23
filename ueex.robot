@@ -668,11 +668,11 @@ Login
 
 Скасувати контракт
   [Arguments]  ${username}  ${tender_uaid}  ${contract_num}
-  ${file_path}  ${file_title}  ${file_content}=  create_fake_doc
   ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
   Wait Until Element Is Visible  xpath=(//div[contains(@id, 'pn_control_contract')][1]//span[contains(@class, 'contract_cancelled')])
   Click Element  xpath=(//div[contains(@id, 'pn_control_contract')][1]//span[contains(@class, 'contract_cancelled')])
   Wait Until Page Contains  Публікацію виконано
+
 
 
 ############################### об'єкт МП ###################################################
@@ -1011,6 +1011,89 @@ Login
   [Arguments]  ${username}  ${tender_uaid}
   Sleep   60
   ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
+
+############################### Виконання Умов ###################################################
+
+Активувати контракт
+  [Arguments]  ${username}  ${contract_uaid}
+  Sleep   60
+  ueex.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+
+Пошук договору по ідентифікатору
+  [Arguments]  ${username}  ${contract_uaid}
+  Switch Browser  ${BROWSER_ALIAS}
+  Set Global Variable   ${SEARCH_MODE}   'tenders'
+  Go to  ${USERS.users['${username}'].default_page}
+  Wait Until Element Is Visible  id=btnFilter
+  Wait Until Element Contains  id=records_shown  Y
+  Click Element  id=btFilter_contract
+  Input Text  id=ew_fv_1_value  ${contract_uaid}
+  Click Element  id=btnFilter
+  Wait Until Element Contains  id=records_shown  Y
+  Click Element  xpath=(//a[contains(@class, 'record_title')])
+  Wait Until Element Is Visible  xpath=(//*[@id='tPosition_status'])
+
+Отримати інформацію із договору
+  [Arguments]  ${username}  ${contract_uaid}  ${fieldname}
+  ${return_value}=  Run Keyword  ueex.Отримати інформацію про contract_${fieldname}
+  [return]  ${return_value}
+
+Отримати інформацію з активу в договорі
+  [Arguments]  ${username}  ${contract_uaid}  ${item_id}  ${field_name}
+  ${return_value}=   Run KeyWord   ueex.Отримати інформацію з поля предмету  ${username}  ${contract_uaid}  ${item_id}  ${field_name}
+  [Return]  ${return_value}
+
+Вказати дату отримання оплати
+  [Arguments]  ${username}  ${contract_uaid}  ${dateMet}  ${milestone_index}
+  ueex.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+  Внести дату та час  _milestone_${milestone_index}_dateMet  ${dateMet}
+  Click Element  xpath=(//*[@name='milestones_${milestone_index}_met'])
+
+Підтвердити відсутність оплати
+  [Arguments]  ${username}  ${contract_uaid}  ${dateMet}  ${milestone_index}
+  ueex.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+  Click Element  xpath=(//*[@name='milestones_${milestone_index}_notMet'])
+
+Завантажити наказ про завершення приватизації
+  [Arguments]  ${username}  ${contract_uaid}  ${filepath}
+  ueex.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+  Click Element  xpath=(//*[@id='btn_documents_addmilestone_1'])
+  Select From List By Value  id=slFile_documentType  approvalProtocol
+  Choose File  xpath=(//*[@id='upload_form']/input[2])  ${filepath}
+  Sleep  2
+  Click Element  id=upload_button
+  Wait Until Element Contains  id=tFileMessage  Файл завантажено
+  Reload Page
+
+Вказати дату прийняття наказу
+  [Arguments]  ${username}  ${contract_uaid}  ${dateMet}
+  ueex.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+  Внести дату та час  _milestone_1_dateMet  ${dateMet}
+  Click Element  xpath=(//*[@name='milestones_1_met'])
+
+Підтвердити відсутність наказу про приватизацію
+  [Arguments]  ${username}  ${contract_uaid}  ${filepath}
+  ueex.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+  Click Element  xpath=(//*[@id='btn_documents_addmilestone_1'])
+  Select From List By Value  id=slFile_documentType  rejectionProtocol
+  Choose File  xpath=(//*[@id='upload_form']/input[2])  ${filepath}
+  Sleep  2
+  Click Element  id=upload_button
+  Wait Until Element Contains  id=tFileMessage  Файл завантажено
+  Reload Page
+  Wait Until Element Is Visible  xpath=(//*[@id='tPosition_status'])
+  Click Element  xpath=(//*[@name='milestones_1_notMet'])
+
+Вказати дату виконання умов контракту
+  [Arguments]  ${username}  ${contract_uaid}  ${dateMet}  
+  ueex.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+  Внести дату та час  _milestone_2_dateMet  ${dateMet}
+  Click Element  xpath=(//*[@name='milestones_2_met'])
+
+Підтвердити невиконання умов приватизації
+  [Arguments]  ${username}  ${contract_uaid}
+  ueex.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
+  Click Element  xpath=(//*[@name='milestones_2_notMet'])
 
 ############################### Сервіс ###################################################
 
