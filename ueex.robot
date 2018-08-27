@@ -562,6 +562,7 @@ Login
   [Arguments]  ${username}  ${tender_uaid}
   ueex.Пошук тендера по ідентифікатору  ${username}  ${tender_uaid}
   ${return_value}=  Get Matching Xpath Count  xpath=(//div[@id='pn_Award_content']//div[starts-with(@id, 'pn_award_Record_')])
+  ${return_value}=  Convert To Integer  ${return_value}
   [Return]  ${return_value}
 
 Завантажити документ в авард
@@ -1035,11 +1036,13 @@ Login
 
 Отримати інформацію із договору
   [Arguments]  ${username}  ${contract_uaid}  ${fieldname}
+  ueex.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
   ${return_value}=  Run Keyword  ueex.Отримати інформацію про contract_${fieldname}
   [return]  ${return_value}
 
 Отримати інформацію з активу в договорі
   [Arguments]  ${username}  ${contract_uaid}  ${item_id}  ${field_name}
+  ueex.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
   ${return_value}=   Run KeyWord   ueex.Отримати інформацію з поля предмету  ${username}  ${contract_uaid}  ${item_id}  ${field_name}
   [Return]  ${return_value}
 
