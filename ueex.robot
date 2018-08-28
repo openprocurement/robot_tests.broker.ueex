@@ -1053,7 +1053,7 @@ Login
   Click Element  xpath=(//*[@name='milestones_${milestone_index}_met'])
 
 Підтвердити відсутність оплати
-  [Arguments]  ${username}  ${contract_uaid}  ${dateMet}  ${milestone_index}
+  [Arguments]  ${username}  ${contract_uaid}  ${milestone_index}
   ueex.Пошук договору по ідентифікатору  ${username}  ${contract_uaid}
   Click Element  xpath=(//*[@name='milestones_${milestone_index}_notMet'])
 
